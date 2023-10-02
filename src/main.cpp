@@ -13,8 +13,7 @@ Motor mIntakeL(20);	//intake declaration
 Motor mIntakeR(11);
 ADIButton catapultLimit('A');
 
-
-/* Declares the chassis */
+// Declares the chassis.
 std::shared_ptr<ChassisController> Kenneth = 
 	ChassisControllerBuilder()
 		.withMotors(
@@ -37,6 +36,17 @@ std::shared_ptr<ChassisController> Kenneth =
 		.build();
 
 
+// Declares the catapult.
+
+const double liftkP = 0.001;
+const double liftkI = 0.0001;
+const double liftkD = 0.0001;
+
+std::shared_ptr<AsyncPositionController<double, double>> catapultController = 
+  AsyncPosControllerBuilder()
+    .withMotor(1)
+    .withGains({liftkP, liftkI, liftkD})
+    .build();
 
 /*
 * A callback function for LLEMU's center button.
