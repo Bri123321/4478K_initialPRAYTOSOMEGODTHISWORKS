@@ -31,13 +31,12 @@ std::shared_ptr<ChassisController> Kenneth =
 		)
 		.withGains(
 			{1, 0, 0}, // distance gains(constants)
-			{0, 0, 0} // turning gains(constants)
+			{1, 0, 0} // turning gains(constants)
 			)
 		.build();
 
 
-// Declares the catapult.
-
+// Declares the catapult
 const double liftkP = 0.001;
 const double liftkI = 0.0001;
 const double liftkD = 0.0001;
