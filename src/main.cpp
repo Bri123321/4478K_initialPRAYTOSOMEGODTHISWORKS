@@ -47,6 +47,19 @@ std::shared_ptr<AsyncPositionController<double, double>> catapultController =
     .withGains({liftkP, liftkI, liftkD})
     .build();
 
+// Declares the catapult
+const double intakekP = 0.001;
+const double intakekI = 0.0001;
+const double intakekD = 0.0001;
+
+std::shared_ptr<AsyncPositionController<double, double>> intakeController = 
+  AsyncPosControllerBuilder()
+    .withMotor(
+		{20, -11}
+	)
+    .withGains({intakekP, intakekI, intakekD})
+    .build();
+
 /*
 * A callback function for LLEMU's center button.
 *
@@ -74,10 +87,7 @@ void autonSelector() {
 	
 }
 
-void intake(int speed, float rotations){
-	mIntakeL.moveAbsolute(rotations, speed);
-	mIntakeR.moveAbsolute(rotations, speed);
-}
+
 
 /*
 * Runs initialization code. This occurs as soon as the program is started.
@@ -127,7 +137,7 @@ void leftWPAuto(){
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intake(100, 3);
+	intakeController->setTarget(-1000); //outtake ~3 rotations
 
 	//pushes triballs over the bar
 	Kenneth->moveDistance(-24_in);
@@ -138,14 +148,14 @@ void leftWPAuto(){
 	Kenneth->moveDistance(68_in);
 
 	//intakes triball in load zone
-	intake(100, -3);
+	intakeController->setTarget(1000); //intake ~3 rotations
 
 	//turn to hit bar
 	Kenneth->turnAngle(135_deg);
 	Kenneth->moveDistance(48_in);
 
 	//outtake triball
-	intake(100, 3);	
+	intakeController->setTarget(-1000);	//outake ~3 rotations
 }
 
 void rightWPAuto(){
