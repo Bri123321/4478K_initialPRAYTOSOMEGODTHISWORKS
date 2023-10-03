@@ -258,7 +258,10 @@ void opcontrol() {
 			rightY = (rightY * rightY) / 127;
 			leftY = (leftY * leftY) / 127;
 			Kenneth->getModel()->tank(rightY, leftY);
-		} else if (rightY < 0 && leftY < 0) {
+		} else {
+			Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
+		}
+		if (rightY < 0 && leftY < 0) {
 			rightY = (rightY * rightY) / -127;
 			leftY = (leftY * leftY)  / -127;
 			Kenneth->getModel()->tank(rightY, leftY);
