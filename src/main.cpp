@@ -8,9 +8,9 @@ using namespace okapi;
 pros::Controller master(CONTROLLER_MASTER);
 Controller Controller1;
 
-Motor mCatapult(1);	//catapult declaration
-Motor mIntakeL(20);	//intake declaration
-Motor mIntakeR(11);
+Motor mCatapult(2);	//catapult declaration
+Motor mIntakeL(19);	//intake declaration
+Motor mIntakeR(12);
 ADIButton catapultLimit('A');
 
 // Declares the chassis.
@@ -29,10 +29,10 @@ std::shared_ptr<ChassisController> Kenneth =
 			Logger::LogLevel::debug //Most verbose log level
 		)
 		)
-		.withGains(
-			{1, 0, 0}, // distance gains(constants)
+		/*.withGains(
+			{1, 0.001, 0.0001}, // distance gains(constants)
 			{1, 0, 0} // turning gains(constants)
-			)
+			)*/
 		.build();
 
 
@@ -51,6 +51,7 @@ std::shared_ptr<AsyncPositionController<double, double>> catapultController =
 const double intakekP = 0.001;
 const double intakekI = 0.0001;
 const double intakekD = 0.0001;
+
 
 std::shared_ptr<AsyncPositionController<double, double>> intakeController = 
   AsyncPosControllerBuilder()
@@ -125,6 +126,7 @@ void competition_initialize() {
 }
 
 void test_auto(){
+	Kenneth->setMaxVelocity(400);
 	Kenneth->moveDistance(12_in); // for testing PIDs
 }
 
@@ -167,27 +169,27 @@ void rightWPAuto(){
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intake(100, 3);
+	//intake(100, 3);
 
 	//turns and intakes nearest triball on the center line 
 	Kenneth->turnAngle(180_deg);
-	intake(100, 3);
+	//intake(100, 3);
 	Kenneth->moveDistance(24_in);
 
 	//turns and deposits it in goal
 	Kenneth->turnAngle(180_deg);
-	intake(100, 3);
+	//intake(100, 3);
 	Kenneth->moveDistance(24_in);
 
 	//turns and intakes the further triball on the center line
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	intake(100, 3);
+	//intake(100, 3);
 
 	//turns and deposits the triball in the goal
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	intake(100, 3);
+	//intake(100, 3);
 
 }
 
