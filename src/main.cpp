@@ -8,16 +8,16 @@ using namespace okapi;
 pros::Controller master(CONTROLLER_MASTER);
 Controller Controller1;
 
-Motor mCatapult(1);	//catapult declaration
-Motor mIntakeL(20);	//intake declaration
-Motor mIntakeR(11);
+Motor mCatapult(2);	//catapult declaration
+Motor mIntakeL(19);	//intake declaration 
+Motor mIntakeR(12);
 ADIButton catapultLimit('A');
 
 // Declares the chassis.
 std::shared_ptr<ChassisController> Kenneth = 
 	ChassisControllerBuilder()
 		.withMotors(
-			{16, 9}, //left motors
+			{16, 9,},
 			{-15, -14} // right motors
 			) //uses motors 17-20
 		//blue motors, 3.25 in diameter, 9 in apart
@@ -30,14 +30,13 @@ std::shared_ptr<ChassisController> Kenneth =
 		)
 		)
 		.withGains(
-			{1, 0, 0}, // distance gains(constants)
-			{0, 0, 0} // turning gains(constants)
+			{0.5, 0.0, 0.0}, // distance gains(constants)
+			{1, 0, 0} // turning gains(constants)
 			)
 		.build();
 
 
-// Declares the catapult.
-
+// Declares the catapult
 const double liftkP = 0.001;
 const double liftkI = 0.0001;
 const double liftkD = 0.0001;
@@ -46,6 +45,20 @@ std::shared_ptr<AsyncPositionController<double, double>> catapultController =
   AsyncPosControllerBuilder()
     .withMotor(1)
     .withGains({liftkP, liftkI, liftkD})
+    .build();
+
+// Declares the catapult
+const double intakekP = 0.1;
+const double intakekI = 0;
+const double intakekD = 0;
+
+
+std::shared_ptr<AsyncPositionController<double, double>> intakeController = 
+  AsyncPosControllerBuilder()
+    .withMotor(
+		{19, -12}
+	)
+    .withGains({intakekP, intakekI, intakekD})
     .build();
 
 /*
@@ -75,10 +88,7 @@ void autonSelector() {
 	
 }
 
-void intake(int speed, float rotations){
-	mIntakeL.moveAbsolute(rotations, speed);
-	mIntakeR.moveAbsolute(rotations, speed);
-}
+
 
 /*
 * Runs initialization code. This occurs as soon as the program is started.
@@ -116,19 +126,21 @@ void competition_initialize() {
 }
 
 void test_auto(){
+	Kenneth->setMaxVelocity(400);
+	intakeController->setTarget(-1000);
 	Kenneth->moveDistance(12_in); // for testing PIDs
 }
 
 void leftWPAuto(){
 	//moves to middle of field
-	Kenneth->moveDistance(36_in);
+	Kenneth->moveDistance(50_in);
 
 	//turns and moves to goal
 	Kenneth->turnAngle(-90_deg);		//is left or right negative? test.
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intake(100, 3);
+	intakeController->setTarget(-1000); //outtake ~3 rotations
 
 	//pushes triballs over the bar
 	Kenneth->moveDistance(-24_in);
@@ -139,14 +151,14 @@ void leftWPAuto(){
 	Kenneth->moveDistance(68_in);
 
 	//intakes triball in load zone
-	intake(100, -3);
+	intakeController->setTarget(1000); //intake ~3 rotations
 
 	//turn to hit bar
 	Kenneth->turnAngle(135_deg);
 	Kenneth->moveDistance(48_in);
 
 	//outtake triball
-	intake(100, 3);	
+	intakeController->setTarget(-1000);	//outake ~3 rotations
 }
 
 void rightWPAuto(){
@@ -158,27 +170,27 @@ void rightWPAuto(){
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intake(100, 3);
+	//intake(100, 3);
 
 	//turns and intakes nearest triball on the center line 
 	Kenneth->turnAngle(180_deg);
-	intake(100, 3);
+	//intake(100, 3);
 	Kenneth->moveDistance(24_in);
 
 	//turns and deposits it in goal
 	Kenneth->turnAngle(180_deg);
-	intake(100, 3);
+	//intake(100, 3);
 	Kenneth->moveDistance(24_in);
 
 	//turns and intakes the further triball on the center line
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	intake(100, 3);
+	//intake(100, 3);
 
 	//turns and deposits the triball in the goal
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	intake(100, 3);
+	//intake(100, 3);
 
 }
 
@@ -249,7 +261,10 @@ void opcontrol() {
 			rightY = (rightY * rightY) / 127;
 			leftY = (leftY * leftY) / 127;
 			Kenneth->getModel()->tank(rightY, leftY);
-		} else if (rightY < 0 && leftY < 0) {
+		} else {
+			Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
+		}
+		if (rightY < 0 && leftY < 0) {
 			rightY = (rightY * rightY) / -127;
 			leftY = (leftY * leftY)  / -127;
 			Kenneth->getModel()->tank(rightY, leftY);

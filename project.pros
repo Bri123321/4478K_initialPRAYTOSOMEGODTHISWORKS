@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "4478K_9-19-23",
+    "project_name": "4478K_10-2-23",
     "target": "v5",
     "templates": {
       "kernel": {
@@ -310,7 +310,8 @@
     },
     "upload_options": {
       "icon": "pizza",
-      "slot": 1
+      "slot": 1,
+      "description": "Code without constants"
     }
   }
 }
