@@ -9,7 +9,7 @@ pros::Controller master(CONTROLLER_MASTER);
 Controller Controller1;
 
 Motor mCatapult(2);	//catapult declaration
-Motor mIntakeL(19);	//intake declaration
+Motor mIntakeL(19);	//intake declaration 
 Motor mIntakeR(12);
 ADIButton catapultLimit('A');
 
@@ -17,7 +17,7 @@ ADIButton catapultLimit('A');
 std::shared_ptr<ChassisController> Kenneth = 
 	ChassisControllerBuilder()
 		.withMotors(
-			{16, 9}, //left motors
+			{16, 9,},
 			{-15, -14} // right motors
 			) //uses motors 17-20
 		//blue motors, 3.25 in diameter, 9 in apart
@@ -29,10 +29,10 @@ std::shared_ptr<ChassisController> Kenneth =
 			Logger::LogLevel::debug //Most verbose log level
 		)
 		)
-		/*.withGains(
-			{1, 0.001, 0.0001}, // distance gains(constants)
+		.withGains(
+			{0.5, 0.0, 0.0}, // distance gains(constants)
 			{1, 0, 0} // turning gains(constants)
-			)*/
+			)
 		.build();
 
 
@@ -48,15 +48,15 @@ std::shared_ptr<AsyncPositionController<double, double>> catapultController =
     .build();
 
 // Declares the catapult
-const double intakekP = 0.001;
-const double intakekI = 0.0001;
-const double intakekD = 0.0001;
+const double intakekP = 0.1;
+const double intakekI = 0;
+const double intakekD = 0;
 
 
 std::shared_ptr<AsyncPositionController<double, double>> intakeController = 
   AsyncPosControllerBuilder()
     .withMotor(
-		{20, -11}
+		{19, -12}
 	)
     .withGains({intakekP, intakekI, intakekD})
     .build();
@@ -127,12 +127,13 @@ void competition_initialize() {
 
 void test_auto(){
 	Kenneth->setMaxVelocity(400);
+	intakeController->setTarget(-1000);
 	Kenneth->moveDistance(12_in); // for testing PIDs
 }
 
 void leftWPAuto(){
 	//moves to middle of field
-	Kenneth->moveDistance(36_in);
+	Kenneth->moveDistance(50_in);
 
 	//turns and moves to goal
 	Kenneth->turnAngle(-90_deg);		//is left or right negative? test.
