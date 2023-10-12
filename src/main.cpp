@@ -30,8 +30,8 @@ std::shared_ptr<ChassisController> Kenneth =
 		)
 		)
 		.withGains(
-			{0.5, 0.0, 0.0}, // distance gains(constants)
-			{1, 0, 0} // turning gains(constants)
+			{1.35, 0.0, 0.25}, // distance gains(constants)
+			{1.35, 0.25, 0} // turning gains(constants)
 			)
 		.build();
 
@@ -126,9 +126,8 @@ void competition_initialize() {
 }
 
 void test_auto(){
-	Kenneth->setMaxVelocity(400);
+	Kenneth->moveDistance(18_in);
 	intakeController->setTarget(-1000);
-	Kenneth->moveDistance(12_in); // for testing PIDs
 }
 
 void leftWPAuto(){
@@ -275,18 +274,19 @@ void opcontrol() {
 		
 		ControllerButton intakeInButton(ControllerDigital::R1);
 		ControllerButton intakeOutButton(ControllerDigital::L1);
+		ControllerButton intakeStopButton(ControllerDigital::L2);
 		ControllerButton catapultDownButton(ControllerDigital::B);
 		ControllerButton catapultUpButton(ControllerDigital::A);
 
-		if (intakeInButton.isPressed()){		//intake movements with 1st left and right triggers
+		if (intakeInButton.changedToPressed()){		//intake movements with 1st left and right triggers
 			mIntakeL.moveVelocity(127);		//
 			mIntakeR.moveVelocity(-127);
 		}
-		else if (intakeOutButton.isPressed()){	
+		else if (intakeOutButton.changedToPressed()){	
 			mIntakeL.moveVelocity(-127);
 			mIntakeR.moveVelocity(127);
 		}
-		else{
+		else if (intakeStopButton.changedToPressed()){
 			mIntakeL.moveVelocity(0);
 			mIntakeR.moveVelocity(0);
 		}
@@ -295,7 +295,7 @@ void opcontrol() {
 			mCatapult.moveVelocity(-40);
 		}
 		else if(catapultUpButton.changedToPressed()){
-			mCatapult.moveVelocity(127);
+			mCatapult.moveVelocity(0);
 		}
 
 		if (catapultLimit.isPressed()){
