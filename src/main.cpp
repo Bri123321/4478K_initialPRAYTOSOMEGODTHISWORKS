@@ -29,10 +29,10 @@ std::shared_ptr<ChassisController> Kenneth =
 			Logger::LogLevel::debug //Most verbose log level
 		)
 		)
-		.withGains(
+		/*.withGains(
 			{1.35, 0.0, 0.25}, // distance gains(constants)
 			{1.35, 0.25, 0} // turning gains(constants)
-			)
+			)*/
 		.build();
 
 
