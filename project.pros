@@ -1,7 +1,7 @@
 {
   "py/object": "pros.conductor.project.Project",
   "py/state": {
-    "project_name": "4478KWorkingMain",
+    "project_name": "4478KDefaultDrive",
     "target": "v5",
     "templates": {
       "kernel": {

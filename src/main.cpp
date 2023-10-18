@@ -53,10 +53,11 @@ const double intakekI = 0;
 const double intakekD = 0;
 
 
+
 std::shared_ptr<AsyncPositionController<double, double>> intakeController = 
   AsyncPosControllerBuilder()
     .withMotor(
-		{19, -12}
+		{-19, 12}
 	)
     //.withGains({intakekP, intakekI, intakekD})
     .build();
@@ -126,70 +127,63 @@ void competition_initialize() {
 }
 
 void test_auto(){
-	Kenneth->moveDistance(18_in);
-	intakeController->setTarget(-1000);
+	intakeController->reset();
+	intakeController->setTarget(7000);
+
 }
 
 void leftWPAuto(){
 	//moves to middle of field
-	Kenneth->moveDistance(50_in);
+	Kenneth->moveDistance(85_in);
 
 	//turns and moves to goal
-	Kenneth->turnAngle(-90_deg);		//is left or right negative? test.
+	Kenneth->turnAngle(-190_deg);		
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intakeController->setTarget(-1000); //outtake ~3 rotations
+	intakeController->setTarget(7000); //outtake ~3 rotations
+	intakeController->waitUntilSettled();
+	Kenneth->moveDistance(-30_in);
+	/*
 
-	//pushes triballs over the bar
-	Kenneth->moveDistance(-24_in);
-
-	//moves to the load zone
-	Kenneth->moveDistance(12_in);
-	Kenneth->turnAngle(-45_deg);
-	Kenneth->moveDistance(68_in);
-
-	//intakes triball in load zone
-	intakeController->setTarget(1000); //intake ~3 rotations
-
-	//turn to hit bar
-	Kenneth->turnAngle(135_deg);
+	//turns to hit bar
+	Kenneth->turnAngle(-180_deg);
 	Kenneth->moveDistance(48_in);
-
-	//outtake triball
-	intakeController->setTarget(-1000);	//outake ~3 rotations
+	Kenneth->turnAngle(-180_deg);
+	Kenneth->moveDistance(48_in);
+	*/
 }
 
 void rightWPAuto(){
 	//moves to middle of field
-	Kenneth->moveDistance(36_in);
+	Kenneth->moveDistance(95_in);
 
 	//turns and moves to goal
-	Kenneth->turnAngle(90_deg);
+	Kenneth->turnAngle(190_deg);		
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	//intake(100, 3);
+	intakeController->setTarget(7000); //outtake ~3 rotations
 
 	//turns and intakes nearest triball on the center line 
-	Kenneth->turnAngle(180_deg);
-	//intake(100, 3);
+	Kenneth->turnAngle(-90_deg);
+	intakeController->setTarget(1000);
 	Kenneth->moveDistance(24_in);
 
 	//turns and deposits it in goal
 	Kenneth->turnAngle(180_deg);
-	//intake(100, 3);
+	intakeController->setTarget(-1000);
 	Kenneth->moveDistance(24_in);
 
 	//turns and intakes the further triball on the center line
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	//intake(100, 3);
+	intakeController->setTarget(1000);
 
 	//turns and deposits the triball in the goal
 	Kenneth->turnAngle(180_deg);
 	Kenneth->moveDistance(48_in);
-	//intake(100, 3);
+	intakeController->setTarget(-1000);
 
 }
 
