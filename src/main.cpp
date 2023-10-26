@@ -2,6 +2,7 @@
 #include "api.h"
 #include "okapi/api.hpp"
 #include "pros/apix.h"
+#include "string.h"
 using namespace okapi;
 
 // declares ports
@@ -43,8 +44,8 @@ const double liftkD = 0.0001;
 
 std::shared_ptr<AsyncPositionController<double, double>> catapultController = 
   AsyncPosControllerBuilder()
-    .withMotor(1)
-    .withGains({liftkP, liftkI, liftkD})
+    .withMotor(2)
+    //.withGains({liftkP, liftkI, liftkD})
     .build();
 
 // Declares the catapult
@@ -70,7 +71,7 @@ std::shared_ptr<AsyncPositionController<double, double>> intakeController =
 */
 int selection = 0;
 void autonSelector() {
-	if(selection<=2){
+	if(selection<=3){
 		selection ++;
 	} else {
 		selection = 0;
@@ -85,6 +86,10 @@ void autonSelector() {
 		break;
 	case 2:
 		pros::lcd::set_text(2, "Right WP auton");
+		break;
+	case 3:
+		pros::lcd::set_text(2, "Skills auton");
+		break;
 	}
 	
 }
@@ -123,68 +128,89 @@ void disabled() {
  * starts.
  */
 void competition_initialize() {
-	 
+	intakeController->reset();
 }
 
 void test_auto(){
+	int current = 0;
 	intakeController->reset();
-	intakeController->setTarget(7000);
+	intakeController->setTarget(current + 7000);
 
 }
 
 void leftWPAuto(){
+	int current = 0;
+	
 	//moves to middle of field
-	Kenneth->moveDistance(85_in);
+	Kenneth->moveDistance(82.5_in);
 
 	//turns and moves to goal
 	Kenneth->turnAngle(-190_deg);		
-	Kenneth->moveDistance(12_in);
+	Kenneth->moveDistance(15_in);
 
 	//outtakes triball into goal
-	intakeController->setTarget(7000); //outtake ~3 rotations
+	intakeController->setTarget(current + 5000); //outtake ~3 rotations
 	intakeController->waitUntilSettled();
-	Kenneth->moveDistance(-30_in);
-	/*
+	Kenneth->moveDistance(-8_in);
+	Kenneth->turnAngle(180_deg);
+	Kenneth->setMaxVelocity(500);
+	Kenneth->moveDistance(-90_in);
 
-	//turns to hit bar
-	Kenneth->turnAngle(-180_deg);
-	Kenneth->moveDistance(48_in);
-	Kenneth->turnAngle(-180_deg);
-	Kenneth->moveDistance(48_in);
-	*/
+	Kenneth->turnAngle(185_deg);
+	Kenneth->moveDistance(46_in);
+	
 }
 
 void rightWPAuto(){
+	int current = 0;
 	//moves to middle of field
-	Kenneth->moveDistance(95_in);
+	Kenneth->moveDistance(102.5_in);
 
 	//turns and moves to goal
-	Kenneth->turnAngle(190_deg);		
+	Kenneth->turnAngle(195_deg);		
 	Kenneth->moveDistance(12_in);
 
 	//outtakes triball into goal
-	intakeController->setTarget(7000); //outtake ~3 rotations
+	intakeController->setTarget(current+2000); //outtake ~3 rotations
+	intakeController->waitUntilSettled();
 
-	//turns and intakes nearest triball on the center line 
-	Kenneth->turnAngle(-90_deg);
-	intakeController->setTarget(1000);
-	Kenneth->moveDistance(24_in);
-
-	//turns and deposits it in goal
-	Kenneth->turnAngle(180_deg);
-	intakeController->setTarget(-1000);
-	Kenneth->moveDistance(24_in);
-
-	//turns and intakes the further triball on the center line
-	Kenneth->turnAngle(180_deg);
-	Kenneth->moveDistance(48_in);
-	intakeController->setTarget(1000);
+	//turns and intakes the nearest triball on the center line
+	Kenneth->moveDistance(-7_in);
+	/*
+	Kenneth->turnAngle(347.5_deg);
+	current = 0;
+	intakeController->setTarget(current+6000);
+	Kenneth->moveDistance(30_in);
 
 	//turns and deposits the triball in the goal
-	Kenneth->turnAngle(180_deg);
+	Kenneth->turnAngle(-380_deg);
 	Kenneth->moveDistance(48_in);
-	intakeController->setTarget(-1000);
+	intakeController->setTarget(current-1000);
 
+	//turns and intakes the further triball on the center line
+	Kenneth->moveDistance(-7_in);
+	Kenneth->turnAngle(350_deg);
+	intakeController->setTarget(current+3000);
+	Kenneth->moveDistance(48_in);
+
+	//turns and deposits the triball in the goal
+	Kenneth->turnAngle(310_deg);
+	Kenneth->moveDistance(48_in);
+	intakeController->setTarget(current-1000);
+*/
+}
+
+void skillsAuton(){
+	int current = 0;
+	int x = 0;
+	Kenneth->setMaxVelocity(200);
+	Kenneth->moveDistance(1.5_in);
+	catapultController->setMaxVelocity(60);
+	catapultController->setTarget(-100000000);
+	/*while(x<=40){
+		catapultController->setTarget(current - 180);
+		x++;
+	}*/
 }
 
 void intake(float speed, float revolutions){
@@ -213,6 +239,9 @@ void autonomous() {
 		break;
 	case 2:
 		rightWPAuto();
+		break;
+	case 3:
+		skillsAuton();
 		break;
 	}
 	
@@ -264,7 +293,7 @@ void opcontrol() {
 		} else {
 			Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
 		}*/
-		Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
+		Kenneth->getModel()->tank(.9*Controller1.getAnalog(ControllerAnalog::leftY), .9*Controller1.getAnalog(ControllerAnalog::rightY));
 		
 		ControllerButton intakeInButton(ControllerDigital::R1);
 		ControllerButton intakeOutButton(ControllerDigital::L1);
@@ -286,7 +315,7 @@ void opcontrol() {
 		}
 
 		if (catapultDownButton.changedToPressed()){
-			mCatapult.moveVelocity(-40);
+			mCatapult.moveVelocity(-60);
 		}
 		else if(catapultUpButton.changedToPressed()){
 			mCatapult.moveVelocity(0);
