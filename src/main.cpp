@@ -249,7 +249,7 @@ void opcontrol() {
 
 		float rightY = Controller1.getAnalog(ControllerAnalog::rightY);
 		float leftY = Controller1.getAnalog(ControllerAnalog::leftY);
-		/*
+		
 		if (rightY >= 0 && leftY >=0){
 			rightY = (rightY * rightY) / 127;
 			leftY = (leftY * leftY) / 127;
@@ -263,7 +263,8 @@ void opcontrol() {
 			Kenneth->getModel()->tank(rightY, leftY);
 		} else {
 			Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
-		}*/
+		}
+		
 		Kenneth->getModel()->tank(Controller1.getAnalog(ControllerAnalog::leftY), Controller1.getAnalog(ControllerAnalog::rightY));
 		
 		ControllerButton intakeInButton(ControllerDigital::R1);
